@@ -21,6 +21,8 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
     engine.runRenderLoop(() => {
       if (typeof onRender === "function") onRender(scene);
       scene.render();
+      let divFps = document.getElementById("fps");
+      divFps.innerHTML = engine.getFps().toFixed() + " fps";
     });
 
     const resize = () => {

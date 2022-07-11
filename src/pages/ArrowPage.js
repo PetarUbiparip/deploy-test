@@ -1,28 +1,48 @@
 import React from "react"
 import '@babylonjs/loaders';
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader } from "@babylonjs/core"
+import {  Vector3, SceneLoader, ArcRotateCamera, Color3, GlowLayer, AnimationGroup} from "@babylonjs/core"
 import SceneHook from "../hooks/SceneHook/SceneHook"
 let box
 
 const onSceneReady = (scene) => {
+  //set scene color to black
+  scene.clearColor = Color3.Black();
+
   // This creates and positions a free camera (non-mesh)
-  const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene)
-
-  // This targets the camera to scene origin
-  camera.setTarget(Vector3.Zero())
-
-  const canvas = scene.getEngine().getRenderingCanvas()
+  const camera = new ArcRotateCamera('camera1', 3.14, 1.55, 6.5, new Vector3(0, 0, 0), scene);
 
   // This attaches the camera to the canvas
-  camera.attachControl(canvas, true)
+  const canvas = scene.getEngine().getRenderingCanvas()
+  camera.attachControl(canvas, false) 
+  camera.wheelPrecision = 30;
+  camera.minZ = 0.1;
+  camera.setTarget(Vector3.Zero())
 
-  const lol = SceneLoader.ImportMesh(
+  const warpStraight = SceneLoader.ImportMesh(
     '',
     require('../assets/scenes/Arrow/warp_straight.glb'),
     '',
     scene
   )
+  
+  // const arrowTarget = SceneLoader.ImportMesh(
+  //   '',
+  //   require('../assets/scenes/Arrow/ArrowTarget.glb'),
+  //   '',
+  //   scene
+  // )
+  // console.log(arrowTarget)
 
+  // const arrowWarpTargetCamera = SceneLoader.ImportMesh(
+  //   '',
+  //   require('../assets/scenes/Arrow/ArrowWarpTargetCamera.glb'),
+  //   '',
+  //   scene
+  // )
+
+  // set glow
+  var glow = new GlowLayer("glow", scene);
+  glow.intensity = 2;
 };
 
 /**
@@ -40,5 +60,6 @@ const onRender = (scene) => {
 export default () => (
   <div>
     <SceneHook antialias onSceneReady={onSceneReady} onRender={onRender} id="my-canvas" />
+    <p id="fps"></p>
   </div>
 );
