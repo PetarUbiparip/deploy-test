@@ -20,25 +20,10 @@ const onSceneReady = (scene) => {
 
   const warpStraight = SceneLoader.ImportMesh(
     '',
-    require('../assets/scenes/Arrow/warp_straight.glb'),
+    require('../assets/scenes/Arrow/ArrowTarget.glb'),
     '',
     scene
   )
-  
-  // const arrowTarget = SceneLoader.ImportMesh(
-  //   '',
-  //   require('../assets/scenes/Arrow/ArrowTarget.glb'),
-  //   '',
-  //   scene
-  // )
-  // console.log(arrowTarget)
-
-  // const arrowWarpTargetCamera = SceneLoader.ImportMesh(
-  //   '',
-  //   require('../assets/scenes/Arrow/ArrowWarpTargetCamera.glb'),
-  //   '',
-  //   scene
-  // )
 
   // set glow
   var glow = new GlowLayer("glow", scene);
