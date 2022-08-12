@@ -22,7 +22,7 @@ code {
   position: fixed;
   color: black;
   background-color: white;
-  left: 0;
+  right: 0;
   top: 0;
   font-size: 20px;
   font-weight: 600;

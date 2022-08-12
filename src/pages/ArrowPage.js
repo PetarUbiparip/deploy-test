@@ -1,239 +1,225 @@
 import React from "react"
 import '@babylonjs/loaders';
-import {  Vector3, SceneLoader, ArcRotateCamera, Color3, GlowLayer, AnimationGroup, Append }from "@babylonjs/core"
+import { HemisphericLight, Animation, Vector3, SceneLoader, ArcRotateCamera, Color3, FadeInOutBehavior, GlowLayer, AnimationGroup, Append, StandardMaterial, Texture, MeshBuilder, Mesh, Box, CubicEase } from "@babylonjs/core"
 import SceneHook from "../hooks/SceneHook/SceneHook"
 import { Button } from "react-babylonjs";
+import { ArrowWarp, ArrowScene } from "./../Loading.js";
 
-let scene1;
-const onSceneReady = (scene) => {
-  scene1 = scene ;
+let scene;
+let camera
+const onSceneReady = async (s, c) => {
+  scene = s;
+  camera = c
   //set scene color to black
+  // scene.clearColor = Color3.White();
   scene.clearColor = Color3.Black();
 
   // This creates and positions a free camera (non-mesh)
-  // let camera = new ArcRotateCamera('camera1', 3.14, 1.55, 6.5, new Vector3(0, 0, 0), scene);
-  let camera = new ArcRotateCamera('camera1', 3.14, 1.85, 6.5, new Vector3(0, 0, 0), scene);
-  //  let camera = new ArcRotateCamera('camera1', 3.14, 2, 7, new Vector3(0, 0, 0), scene1);
+  // camera = new ArcRotateCamera('default_camera', 3.14, 1.55, 6.5, new Vector3(0, 0, 0), scene);
+  // let camera = new ArcRotateCamera('camera1', 3.14, 1.85, 6.5, new Vector3(0, 0, 0), scene);
+  //  let camera = new ArcRotateCamera('camera1', 2.14, 2, 2, new Vector3(0, 0, 0), scene1);
+  var light = new HemisphericLight('HemiLight', new Vector3(0, 0, 0), scene);
 
   // This attaches the camera to the canvas
   const canvas = scene.getEngine().getRenderingCanvas()
-  // camera.attachControl(canvas, false) 
-  // camera.wheelPrecision = 30;
-  // camera.minZ = 0.1;
-  // camera.setTarget(Vector3.Zero())
+  camera.attachControl(canvas, false)
+  camera.wheelPrecision = 100;
+  camera.minZ = 0.1;
+  camera.setTarget(Vector3.Zero())
 
-  // const warpStraight = SceneLoader.ImportMesh(
-  //   '',
-  // require('../assets/scenes/Arrow/warp_straight.glb'),
+
+  // const warp = SceneLoader.Append(
+  //   require('../assets/scenes/Arrow/warp_straight.glb'),
   //   '',
   //   scene,
-  //   (a) => {
-
-  //     console.log(a)
-  //     // console.log(typeof a[0])
-  //     // console.log(a[0])
+  //   (scene) => {
+  //     // console.log("____warp___")
+  //     // console.log(scene1.getNodeByID("MASH2_Instancer_objects")._children[0])
+  //     // console.log("____warp___")
+  //     // arrow = scene;
+  //     // for(let mesh of scene.meshes){
+  //     //   mesh.setEnabled(false);
+  //     // }
+  //     // console.log(scene)
+  //     // console.log(scene.animationGroups[0].pause())
+  //     // console.log(scene.animationGroups[0].stop())
+  //     // console.log(a.animationGroups[0].play())
+  //     // scene.animationGroups[0].stop()
   //   }
   // )
-  const warpStraight =  SceneLoader.Append(
-  require('../assets/scenes/Arrow/warp_straight.glb'),
-    '',
-    scene,
-    (a) => {
-      scene1.activeCamera =scene1.cameras[1];
-
-      var glowWrap = new GlowLayer("glowWrap", scene);
-      glowWrap.intensity = 2;
-
-      for (let m of scene1.getNodeByID("MASH2_Instancer_objects")._children) {
-        glowWrap.addIncludedOnlyMesh(m)
-      }
-      // console.log(a)
-      // console.log(a.animationGroups)
-      // console.log(a.animationGroups[0])
-      // // a.animationGroups[0].pause = true;
-      // console.log(a.animationGroups[0].pause())
-      // console.log("asd "+a.animationGroups[0].stopAnimation)
-      // console.log("asd "+a.animationGroups.stopAnimation)
-      // console.log(a.animations)
-      // console.log(a.stopAnimation())
-    }
-  )
-  const arrowTarget =  SceneLoader.Append(
-    require('../assets/scenes/Arrow/ArrowTarget.glb'),
-      '',
-      scene,
-      (scene) => {
-
-        var glowArrow = new GlowLayer("glowArrow", scene);
-        glowArrow.intensity = 2;
-
-        var glowTarget = new GlowLayer("glowTarget", scene);
-        glowTarget.intensity = 5;
-
-        // arrow
-        let temp1 = [];
-        for (let [i,m] of scene1.getNodeByID("MASH1_Instancer_objects")._children.entries()) {
-          if( i % 5 === 0 ) {
-            temp1.push(m)
-          }
-          m.setEnabled(false);
-          glowArrow.addIncludedOnlyMesh(m)
-        }
-        scene1.getNodeByID("MASH1_Instancer_objects")._children = temp1
 
 
-        //target
-        temp1 = [];
-        for (let [i,m] of scene1.getNodeByID("MASH3_Instancer_objects")._children.entries()) {
-          if( i % 3 === 0 ) {
-            temp1.push(m)
-          }
-          m.setEnabled(false);
-          glowTarget.addIncludedOnlyMesh(m)
-        }
-        scene1.getNodeByID("MASH3_Instancer_objects")._children = temp1
-
-        
-        // temp1 = [];
-        // //animation optimisation
-        // console.log(scene1.animationGroups[1]._animatables)
-        // console.log(scene1.animationGroups[1]._animatables.entries())
-        // for (let [i,m] of scene1.animationGroups[1]._animatables.entries()) {
-        //   if( i % 5 === 0 ) 
-        //     temp1.push(m)
-        // }
-        // console.log(temp1)
-        // scene1.animationGroups[1]._animatables = temp1
-        // console.log(scene1.animationGroups[1]._animatables)
-
-          // arow and target animation
-          scene1.animationGroups[1].stop();
-
-
-        // for(let mesh of scene.meshes){
-        //   mesh.setEnabled(false);
-        // }
-        // console.log(scene)
-        // console.log(scene.animationGroups[0].pause())
-        // console.log(scene.animationGroups[0].stop())
-        // console.log(a.animationGroups[0].play())
-        // scene.animationGroups[0].stop()
-      }
-    )
-
-
-    // const arrowWarpTargetCamera =  SceneLoader.Append(
-    //   require('../assets/scenes/Arrow/ArrowWarpTargetCamera.glb'),
-    //     '',
-    //     scene,
-    //     (scene) => {
-          // for(let mesh of scene.meshes){
-            // mesh.setEnabled(false);
-          // }
-    //       console.log(scene)
-    //       console.log(scene.animationGroups)
-    //       console.log(scene.meshes)
-    //       console.log(scene.cameras)
-    //       // console.log(scene.animationGroups[0].pause())
-    //       // console.log(scene.animationGroups[0].stop())
-    //       // console.log(a.animationGroups[0].play())
-    //       // scene.animationGroups[0].stop()
-    //       // let camera = scene1.cameras[1];
-    //       // scene1.activeCamera =camera;
-    //       // let camera1 =scene1.getCameraByName("camera_Arrow");
-    //       scene1.activeCamera =scene1.getCameraByName("camera_Arrow");
-    //       // camera1.attachControl(canvas, false) 
-    //       // camera1.wheelPrecision = 30;
-    //       // camera1.minZ = 0.1;
-    //       // camera1.setTarget(Vector3.Zero())
-    //     }
-    //   )
-
-
-
-    // const warp_straight =  SceneLoader.Append(
-    // require('../assets/scenes/Arrow/warp_straight.glb'),
-    //   '',
-    //   this.scene,
-    //   (scene) => {
-    //     arrow = scene;
-    //     for(let mesh of scene.meshes){
-    //       mesh.setEnabled(false);
-    //     }
-    //     console.log(scene)
-    //     // console.log(scene.animationGroups[0].pause())
-    //     // console.log(scene.animationGroups[0].stop())
-    //     // console.log(a.animationGroups[0].play())
-    //     scene.animationGroups[0].stop()
-    //   }
-    // )
-  // const arrowTarget = SceneLoader.ImportMesh(
+  // const warp = Warp;
+  // const all = All;
+  // const all = SceneLoader.Append(
+  //   require('../assets/scenes/Arrow/all.glb'),
   //   '',
-  //   require('../assets/scenes/Arrow/ArrowTarget.glb'),
-  //   '',
-  //   scene
+  //   scene,
+  //   (scene) => {
+  //     scene.animationGroups[1].stop();
+  //     // console.log(scene);
+  //     // scene.activeCamera = scene.cameras[2];
+
+
+  //     for (let [i, m] of scene.getNodeByID("Target_Baked")._children.entries()) {
+  //       m.setEnabled(false);
+  //     }
+
+  //     for (let [i, m] of scene.getNodeByID("Arrow_Baked")._children.entries()) {
+  //       m.setEnabled(false);
+  //     }
+
+  //     for (let [i, m] of scene.getNodeByID("Warp_Baked")._children.entries()) {
+  //       m.setEnabled(false);
+  //     }
+
+  //   }
   // )
-  // arrowTarget.animations
-  // console.log(warpStraight)
+
+
+
+
+
+  await ArrowWarp.addAllToScene();
+  await ArrowScene.addAllToScene();
+  scene.animationGroups[1].stop()
+
+  scene.activeCamera = scene.cameras[2];
+  console.log(scene.cameras)
+
+
+  changeChildrenVisibility("Arrow_Baked", false);
+  changeChildrenVisibility("Target_Baked", false);
+  changeChildrenVisibility("Warp_Baked", false);
 
   // set glow
-  // var glow = new GlowLayer("glow", scene);
-  // glow.intensity = 222;
+  var glow = new GlowLayer("glow", scene);
+  glow.intensity = 2;
+
+
 };
 
-/**
- * Will run on every frame render.  We are spinning the box on y-axis.
- */
+
 const onRender = (scene) => {
-  // if (box !== undefined) {
-  //   const deltaTimeInMillis = scene.getEngine().getDeltaTime()
-  //
-  //   const rpm = 10
-  //   box.rotation.y += (rpm / 60) * Math.PI * 2 * (deltaTimeInMillis / 1000)
-  // }
+
 };
 
-async function changeChildrenVisibility(nodeName, enable){
-  // new Promise((resolve,reject) =>{
-    
-    console.log("start :" + Date.now() + " :"+nodeName)
-    for(let m of scene1.getNodeByID(nodeName)._children){
+
+async function changeChildrenVisibility(nodeName, enable, async = false) {
+  let counter = 0;
+  let delay = 0;
+  for (let m of scene.getNodeByID(nodeName)._children) {
+
+    if (async) {
+      if (counter % 100 == 0) {
+        delay += 50;
+      }
+      counter++;
+      setTimeout(() => {
+        m.setEnabled(enable);
+      }, delay);
+    } else {
       m.setEnabled(enable);
     }
-    console.log("end :" + Date.now() + " :"+nodeName)
   }
-  // )
+}
 
-// }
-function test () {
+async function testAll() {
+  // await ArrowScene.addAllToScene();
+  // scene.animationGroups[1].stop()
+
+
+  scene.animationGroups[1].start()
+
+  // scene.activeCamera = scene.cameras[2];
+  // await ArrowWarp.removeFromScene();
+  // return
+
+  // console.log("anim start :" + Date.now() + " :")
+  // console.log("anim end :" + Date.now() + " :")
+
+  //warp
+  // setTimeout(() => {
+  changeChildrenVisibility("MASH2_Instancer_objects", false, true)
+  // }, 0);
+
+  // setTimeout(() => {
+  changeChildrenVisibility("Warp_Baked", true, true);
+  // }, 0);
+
+  // arrow 
+  // setTimeout(() => {
+  // changeChildrenVisibility("Arrow_Baked", true, true, 500);
+  changeChildrenVisibility("Arrow_Baked", true, true);
+  // }, 0);
+
+  // //target
+  // setTimeout(() => {
+  // changeChildrenVisibility("Target_Baked", true, true, 1000);
+  changeChildrenVisibility("Target_Baked", true, true);
+  // }, 0);
+
+
+
+
+  // console.log("anim start  :" + Date.now() + " :")
+  // console.log(scene.animationGroups)
+
+
+  setTimeout(() => {
+    scene.animationGroups[0].stop();
+  }, 3000);
+
+
+  // console.log("anim end :" + Date.now() + " :")
+  // }, 500)
+
+  // console.log(scene.cameras);
+
+  // setTimeout(() => {
+  //   scene.activeCamera = scene.cameras[2];
+  // }, 0);
+
+  // setTimeout(() => {
+  //   scene.activeCamera = scene.cameras[2];
+  //   }, 100);
+
+
+  // console.log("activeCamera :" + Date.now() + " :")
+
+}
+
+
+function test() {
   // for(let m of scene1.meshes){
   //   m.setEnabled(true);
   // }
 
-  console.log(scene1.animationGroups)
+  console.log(scene.animationGroups)
   console.log("anim start :" + Date.now() + " :")
   // console.log(scene1.animationGroups[1]._animatables)
-  scene1.animationGroups[1].start()
+  scene.animationGroups[0].start()
+  scene.animationGroups[1].start()
   console.log("anim end :" + Date.now() + " :")
 
   // arrow 
-  changeChildrenVisibility("MASH1_Instancer_objects", true);
+  changeChildrenVisibility("Arrow_Baked", true);
   // setTimeout(() => changeChildrenVisibility("MASH1_Instancer_objects", true),0)
 
   //target
-  changeChildrenVisibility("MASH3_Instancer_objects", true);
+  changeChildrenVisibility("Target_Baked", true);
   // setTimeout(() => changeChildrenVisibility("MASH3_Instancer_objects", true),0)
 
   // // wrap with timeout
   setTimeout(() => {
     changeChildrenVisibility("MASH2_Instancer_objects", false)
     console.log("anim start  :" + Date.now() + " :")
-    scene1.animationGroups[0].stop();
+    scene.animationGroups[2].stop();
     console.log("anim end :" + Date.now() + " :")
   }, 500)
 
-
-  scene1.activeCamera = scene1.cameras[2];
+  console.log(scene.cameras);
+  scene.activeCamera = scene.cameras[2];
   console.log("activeCamera :" + Date.now() + " :")
 
 
@@ -309,14 +295,70 @@ function test () {
   // console.log(scene1.meshes)
   // scene1.meshes.setEnabled(false);
 
+
+
 }
+
+
+// function fadeOut() {
+//   const frameRate = 30;
+//   console.log("1")
+//   const visibilityAnimation = new Animation("change visibility", "visibility", frameRate,
+//     Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+//   const alphaAnimation = new Animation("change alpha", "alpha", frameRate,
+//     Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+//   const keyFrames = [];
+//   console.log("2")
+//   keyFrames.push({
+//     frame: 0,
+//     value: 0
+//   });
+
+//   keyFrames.push({
+//     frame: frameRate,
+//     value: 1
+//   });
+
+//   keyFrames.push({
+//     frame: 2 * frameRate,
+//     value: 0
+//   });
+//   console.log("3")
+//   visibilityAnimation.setKeys(keyFrames);
+//   alphaAnimation.setKeys(keyFrames);
+
+//   var animationGroup = new AnimationGroup("my group");
+//   // animationGroup.addTargetedAnimation(visibilityAnimation, box);
+//   // animationGroup.addTargetedAnimation(alphaAnimation, outline);
+
+
+//   scene1.meshes.forEach((m) => {
+
+//     animationGroup.addTargetedAnimation(visibilityAnimation, m);
+//   })
+
+//   animationGroup.normalize(0, 2 * frameRate);
+//   animationGroup.play(true);
+
+// }
+
+// function fadeIn() {
+//   // console.log('fadeIn')
+//   // fade.fadeIn(true);
+// }
 
 export default () => (
   <div>
     <SceneHook antialias onSceneReady={onSceneReady} onRender={onRender} id="my-canvas" />
     <p id="fps"></p>
-    <Button onClick={test}>
-        Test
+    <Button onClick={testAll}>
+      Start anim
     </Button>
+    {/* <Button onClick={fadeOut}>
+        Fade out 
+    </Button>
+    <Button onClick={fadeIn}>
+        Fade in
+    </Button> */}
   </div>
 );
