@@ -1,37 +1,28 @@
-// import ArrowPage from './pages/ArrowPage'
-// import PlatonicPage from './pages/PlatonicPage'
-import SceneView from './pages/SceneView'
-// import { button } from "react-babylonjs";
-import { onSceneReady } from "./pages/SceneView"
-// import {
-//   BrowserRouter as Router,
-//   Routes,
-//   Route,
-//   Link
-// } from 'react-router-dom';
-
-// export let selectedScene;
-
-// function switchScene(scene) {
-//   console.log(scene);
-//   selectedScene = scene
-//   onSceneReady();
-// }
-
+import HomePage from './pages/HomePage'
+// import { BrowserRouter as Router, Routes, Route ,Link} from "react-router-dom";
+// import { OurOrganization } from "./scenes/components/OurOrganization"
+// import { Contact } from "./scenes/components/Contact"
+// import CustomRouter from './customRoutes/CustomRouter';
+// import history from './customRoutes/history';
 
 function App() {
   return (
-    // <div className="App">
-    //   <button onClick={() => switchScene('Arrow')}>
-    //     Arrow
-    //   </button>
+    <div>
 
-    //   <button onClick={() => switchScene('Platonic')}>
-    //     Platonic
-    //   </button>
-      < SceneView />
-    // </div>
+      < HomePage />
+      {/* <CustomRouter history={history}>
+      <Link to="/our-organization">OurOrganization</Link>
+      <Link to="/contact">Contact</Link>
+        <div className="App">
+          <Routes>
+            <Route exact path='/our-organization' element={< OurOrganization />}></Route>
+            <Route exact path='/contact' element={< Contact />}></Route>
+          </Routes>
+        </div>
+      </CustomRouter> */}
 
+
+    </div >
   );
 }
 

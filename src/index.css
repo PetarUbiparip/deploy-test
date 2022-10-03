@@ -27,3 +27,45 @@ code {
   font-size: 20px;
   font-weight: 600;
 }
+.buttons{
+  position: fixed;
+}
+
+.home-btns{
+  position: fixed;
+  top: 50%;
+  left: 100px;
+}
+.home-btn{
+  text-transform: uppercase;
+  margin-top: 20px;
+  display: block;
+  font-size: 60px;
+  font-weight: 500;
+  color: grey;
+  background-color: transparent;
+  border: 0;
+}
+
+/* .home-btn:hover{
+  color: white;
+  transform: scale(1.2);
+  transition: transform .5s;
+  cursor: pointer;
+} */
+
+.home-btn-active{
+  color: white;
+  transform: scale(1.2);
+  transition: transform .5s;
+  cursor: pointer;
+}
+
+
+.header{
+  text-transform: uppercase;
+  color: white;
+  position: fixed;
+  top: 50px;
+  left: 50px;
+}

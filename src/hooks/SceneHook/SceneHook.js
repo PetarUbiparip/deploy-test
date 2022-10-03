@@ -1,52 +1,32 @@
 import { useEffect, useRef } from "react";
 import { Engine, Scene, ArcRotateCamera, Vector3 } from "@babylonjs/core";
-import { loadAllData  } from "../../Loading";
-import { startArrowAnim } from "../../pages/ArrowScene"
+import { HomePage  } from "../../pages/HomePage";
+import { startArrowAnimation , startArrowAnimShort} from "../../scenes/WhoWeAreScene"
+import { test } from "../../scenes/HomeScene"
 
+export let homePage;
 export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady, ...rest }) => {
   const reactCanvas = useRef(null);
 
-  // set up basic engine and scene
-
   let engine;
-  let scene;
-  let arrowScene;
-  let platonicScene;
-  let selectedScene = "Arrow";
 
-
-
-  let camera;
   useEffect(() => {
     const { current: canvas } = reactCanvas;
 
     if (!canvas) return;
 
     engine = new Engine(canvas, antialias, engineOptions, adaptToDeviceRatio);
-    arrowScene = new Scene(engine, sceneOptions);
-    platonicScene = new Scene(engine, sceneOptions);
-    scene = platonicScene
-    // camera = new ArcRotateCamera('camera1', 1.5708, 1.5708, 0.2370, new Vector3(0, 0.12, 0), scene);
-    let arrowCamera = new ArcRotateCamera('default_camera', 0, 0, 0, new Vector3(0, 0, 0), arrowScene);
-    let platonicCamera = new ArcRotateCamera('default_camera', 1.5708, 1.5708, 0.2370, new Vector3(0, 0.12, 0), platonicScene);
-    camera = platonicCamera;
-    // let camera = new ArcRotateCamera('default_camera', 3.14, 1.55, 6.5, new Vector3(0, 0, 0), scene);
-    // console.log(camera)
-    loadAllData(arrowScene, platonicScene).then(() => {
-      createScene(platonicScene, platonicCamera, 'Platonic');
-      createScene(arrowScene, arrowCamera, 'Arrow');
-    });
-
+    homePage = new HomePage(engine, sceneOptions);
 
     engine.runRenderLoop(() => {
-      if (typeof onRender === "function") onRender(scene);
-      scene.render();
+      if (typeof onRender === "function") onRender(homePage.activeScene);
+      homePage.activeScene.render();
       let divFps = document.getElementById("fps");
       divFps.innerHTML = engine.getFps().toFixed() + " fps";
     });
 
     const resize = () => {
-      scene.getEngine().resize();
+      homePage.activeScene.getEngine().resize();
     };
 
     if (window) {
@@ -54,7 +34,7 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
     }
 
     return () => {
-      scene.getEngine().dispose();
+      homePage.activeScene.getEngine().dispose();
 
       if (window) {
         window.removeEventListener("resize", resize);
@@ -62,40 +42,41 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
     };
   }, [antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady]);
 
-  function switchScene(sceneName) {
-    switch (sceneName) {
-      case "Arrow":
-        scene = arrowScene;
-        break;
-      case "Platonic":
-        scene = platonicScene;
-        break;
-    }
 
 
-    // scene = platonicScene;
-
-    // createScene('Platonic');
-    // createScene('Arrow');
 
 
-  }
 
   return (
     <div>
+      <div class='buttons'>
+        {/* <button onClick={() => switchScene('Working')}>
+          Working
+        </button>
+
+        <button onClick={() => switchScene('Arrow')}>
+          Arrow
+        </button>
+
+        <button onClick={() => switchScene('Platonic')}>
+          Platonic
+        </button> */}
+
+
+        <button onClick={() => startArrowAnimation()}>
+          Start anim
+        </button>
+        <button onClick={() => startArrowAnimShort()}>
+          Start anim short
+        </button>
+        
+        <button onClick={() => test()}>
+         Test
+        </button>
+      </div>
+
+
       <canvas ref={reactCanvas} {...rest} />
-      <button onClick={() => switchScene('Arrow')}>
-        Arrow
-      </button>
-
-      <button onClick={() => switchScene('Platonic')}>
-        Platonic
-      </button>
-
-
-      <button onClick={() => startArrowAnim()}>
-        Start anim
-      </button>
 
     </div>
 
@@ -103,19 +84,6 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
 
 
 
-  function createScene(scene, camera, sceneName) {
-    // engine = new Engine(canvas, antialias, engineOptions, adaptToDeviceRatio);
-    // scene = new Scene(engine, sceneOptions);
-    // camera = new ArcRotateCamera('camera1', 1.5708, 1.5708, 0.2370, new Vector3(0, 0.12, 0), scene);
-    // // let camera = new ArcRotateCamera('default_camera', 3.14, 1.55, 6.5, new Vector3(0, 0, 0), scene);
-    // // console.log(camera)
-    // loadAll(scene);
-    if (scene.isReady()) {
-      onSceneReady(scene, camera, sceneName);
-    } else {
-      scene.onReadyObservable.addOnce((scene) => onSceneReady(scene, camera, sceneName));
-    }
-  }
 };
 
 
