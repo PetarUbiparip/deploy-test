@@ -1,0 +1,23 @@
+.home-btns {
+    position: fixed;
+    top: 50%;
+    left: 100px;
+}
+
+.home-btn {
+    text-transform: uppercase;
+    margin-top: 20px;
+    display: block;
+    font-size: 60px;
+    font-weight: 500;
+    color: grey;
+    background-color: transparent;
+    border: 0;
+}
+
+.home-btn-active {
+    color: white;
+    transform: scale(1.2);
+    transition: transform .5s;
+    cursor: pointer;
+}

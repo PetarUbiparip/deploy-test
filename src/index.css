@@ -1,23 +1,33 @@
+@import "style/who-we-are.scss";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+    font-family: Montserrat,Arial;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+
+    
+  overflow: hidden;
+  overflow: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    monospace; 
 }
-
 
 #my-canvas{
   width: 100%;
-  height: 99vh;
+  height: 100vh;
+
+  
 }
 
+/* temp needed for development purposes */
 #fps{
   position: fixed;
   color: black;
@@ -26,46 +36,4 @@ code {
   top: 0;
   font-size: 20px;
   font-weight: 600;
-}
-.buttons{
-  position: fixed;
-}
-
-.home-btns{
-  position: fixed;
-  top: 50%;
-  left: 100px;
-}
-.home-btn{
-  text-transform: uppercase;
-  margin-top: 20px;
-  display: block;
-  font-size: 60px;
-  font-weight: 500;
-  color: grey;
-  background-color: transparent;
-  border: 0;
-}
-
-/* .home-btn:hover{
-  color: white;
-  transform: scale(1.2);
-  transition: transform .5s;
-  cursor: pointer;
-} */
-
-.home-btn-active{
-  color: white;
-  transform: scale(1.2);
-  transition: transform .5s;
-  cursor: pointer;
-}
-
-
-.header{
-  text-transform: uppercase;
-  color: white;
-  position: fixed;
-  top: 50px;
-  left: 50px;
 }

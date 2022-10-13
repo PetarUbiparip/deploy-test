@@ -1,0 +1,34 @@
+.scrollbar::-webkit-scrollbar {
+    width: 7px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 2px;
+
+}
+
+.scrollbar-wrapper {
+    pointer-events: none;
+    position: fixed;
+    right: 60px;
+    top: calc(50% - 30vh);
+    width: 1px;
+    background-color: white;
+    height: 60vh;
+}
+
+.scrollbar {
+    margin-left: -4px;
+    width: 8px;
+    overflow-y: scroll;
+    height: 60vh;
+}
+
+.who-we-are-force-overflow {
+    height: 180vh
+}
+
+.solutions-force-overflow {
+    height: 240vh
+}

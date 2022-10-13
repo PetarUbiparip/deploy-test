@@ -1,9 +1,4 @@
 import HomePage from './pages/HomePage'
-// import { BrowserRouter as Router, Routes, Route ,Link} from "react-router-dom";
-// import { OurOrganization } from "./scenes/components/OurOrganization"
-// import { Contact } from "./scenes/components/Contact"
-// import CustomRouter from './customRoutes/CustomRouter';
-// import history from './customRoutes/history';
 
 function App() {
   return (
