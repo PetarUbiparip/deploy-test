@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/deploy-test/static/css/main.17decf20.css",
+    "main.js": "/deploy-test/static/js/main.c5b75700.js",
+    "static/js/787.5070a311.chunk.js": "/deploy-test/static/js/787.5070a311.chunk.js",
+    "static/media/Planet.glb": "/deploy-test/static/media/Planet.54531667275a937b4c93.glb",
+    "static/media/Arrow.glb": "/deploy-test/static/media/Arrow.2e613159890c12053dad.glb",
+    "static/media/Chess.glb": "/deploy-test/static/media/Chess.eb8f15db9a80f3f7c52b.glb",
+    "static/media/Platonic.glb": "/deploy-test/static/media/Platonic.7e73a5590baf70f5e63f.glb",
+    "static/media/Logo.glb": "/deploy-test/static/media/Logo.3a0317fb2ad59e893243.glb",
+    "static/media/Bulb.glb": "/deploy-test/static/media/Bulb.10518033694facaf9aab.glb",
+    "static/media/Warp.glb": "/deploy-test/static/media/Warp.2aed893f6eded985834a.glb",
+    "static/media/platonic_shader.glb": "/deploy-test/static/media/platonic_shader.5fe86fbc340b60e5288e.glb",
+    "static/media/Compass.glb": "/deploy-test/static/media/Compass.99bc91b9b5845d9d595b.glb",
+    "index.html": "/deploy-test/index.html",
+    "main.17decf20.css.map": "/deploy-test/static/css/main.17decf20.css.map",
+    "main.c5b75700.js.map": "/deploy-test/static/js/main.c5b75700.js.map",
+    "787.5070a311.chunk.js.map": "/deploy-test/static/js/787.5070a311.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.17decf20.css",
+    "static/js/main.c5b75700.js"
+  ]
+}
