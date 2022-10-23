@@ -81,6 +81,7 @@ export class HomePage {
         console.log("!!!! Switch Scene", sceneName);
         console.log("!!!! history.location", this.activeSceneName);
 
+        sceneName = sceneName.replace("/deploy-test","")
         //stop prev scene
         if (this.activeSceneName)
             document.dispatchEvent(new CustomEvent("/" + this.activeSceneName + "-stop"));

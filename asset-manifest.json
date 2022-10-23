@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/deploy-test/static/css/main.17decf20.css",
-    "main.js": "/deploy-test/static/js/main.c5b75700.js",
+    "main.js": "/deploy-test/static/js/main.1cfeb1d7.js",
     "static/js/787.5070a311.chunk.js": "/deploy-test/static/js/787.5070a311.chunk.js",
     "static/media/Planet.glb": "/deploy-test/static/media/Planet.54531667275a937b4c93.glb",
     "static/media/Arrow.glb": "/deploy-test/static/media/Arrow.2e613159890c12053dad.glb",
@@ -14,11 +14,11 @@
     "static/media/Compass.glb": "/deploy-test/static/media/Compass.99bc91b9b5845d9d595b.glb",
     "index.html": "/deploy-test/index.html",
     "main.17decf20.css.map": "/deploy-test/static/css/main.17decf20.css.map",
-    "main.c5b75700.js.map": "/deploy-test/static/js/main.c5b75700.js.map",
+    "main.1cfeb1d7.js.map": "/deploy-test/static/js/main.1cfeb1d7.js.map",
     "787.5070a311.chunk.js.map": "/deploy-test/static/js/787.5070a311.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.17decf20.css",
-    "static/js/main.c5b75700.js"
+    "static/js/main.1cfeb1d7.js"
   ]
 }
