@@ -1,6 +1,6 @@
 import '@babylonjs/loaders';
-import { Vector3, HemisphericLight, Color3, Texture, GlowLayer, AxesViewer, MeshBuilder, Space, Axis } from "@babylonjs/core"
-import { Logo, Platonic, Planet } from "../util/Loading.js";
+import { Vector3, HemisphericLight, Color3, Texture, BoundingInfo, AxesViewer, ExecuteCodeAction, ActionManager, Layer } from "@babylonjs/core"
+import { Logo, Platonic, Planet, keepAssets } from "../util/Loading.js";
 import { setGlow } from "../util/ModelUtil";
 import { names } from "../util/Naming.js";
 
@@ -10,49 +10,34 @@ let canvas;
 let animations;
 let activeMesh;
 let activeMouseListeners = [];
+let meshes = {
+    logo: null,
+    platonic: null,
+    planet: null,
+}
+let hoverEvents = {
+    logo: null,
+    platonic: null,
+    planet: null,
+}
+var mouseClicked = false;
 
 export const createHomeScene = async (s, c) => {
     scene = s;
     camera = c;
     scene.clearColor = Color3.Black();
+    // let background = new Layer("", "./textures/Home/png/tempBackground.png", scene);
+
 
     addSceneListeners();
-    addMouseListeners();
 
+    setGlow(2, 1024, 1000, scene)
     cameraConfig()
-
-    await Logo.addAllToScene();
-    await Platonic.addAllToScene();
-    await Planet.addAllToScene();
-
-    // fix emissiveColor for logo material
-    scene.materials[0].emissiveColor = new Color3(0.0983946249, 0.306292057, 0.6389262)
-
-
-    // fix scale for planet and platonic
-    scene.getNodeByID(names.home.meshes.planet).scaling = new Vector3(.7, .7, .7);
-    scene.getNodeByID(names.home.meshes.platonic).scaling = new Vector3(1.5, 1.5, 1.5);
-
-    animations = {
-        logo: scene.animationGroups[0],
-        platonic: scene.animationGroups[1],
-        planet: scene.animationGroups[2],
-    }
-
-    // set glow
-    setGlow(1, 1000, 50, scene)
-    // const localAxes = new AxesViewer(scene, 1);
-
-    resetLogo()
-    resetPlatonic()
-    resetPlanet()
-
-    toLogo();
 };
 
 
 function cameraConfig() {
-    var light = new HemisphericLight('HemiLight', new Vector3(0, 0, 1), scene);
+    new HemisphericLight('HemiLight', new Vector3(0, 0, 1), scene);
     // const canvas = scene.getEngine().getRenderingCanvas()
     // camera.attachControl(canvas, false)
     // camera.wheelPrecision = 1000;
@@ -143,11 +128,11 @@ export function onMouseEnterButton(button, prevSelectedButton) {
 function resetLogo() {
     logoVisibility(false);
     resetLogoAnim();
-    scene.getNodeByID(names.home.meshes.logo).rotation = new Vector3(0, -.25, 0)
+    meshes.logo.rotation = new Vector3(0, -.25, 0)
 }
 
 function toLogo() {
-    activeMesh = scene.getNodeByID(names.home.meshes.logo)
+    activeMesh = meshes.logo
     animations.logo.play()
     logoVisibility(true);
 }
@@ -156,14 +141,27 @@ function leaveLogo() {
     animations.logo.start(false, 3, 240, 0)
 }
 
+function logoHoverAnim() {
+    if (animations.logo.isPlaying || mouseClicked) 
+        return
+    
+    animations.logo.start(false, 3, 240, 200)
+
+    let logoHoverAnimObservable = animations.logo.onAnimationGroupEndObservable.add(() => {
+        // animations.logo.stop();
+        animations.logo.start(false, 3, 200, 240)
+        animations.logo.onAnimationGroupEndObservable.remove(logoHoverAnimObservable)
+    });
+}
+
 function resetPlatonic() {
     platonicVisibility(false);
     resetPlatonicAnim();
-    scene.getNodeByID(names.home.meshes.platonic).rotation = new Vector3(0, -.25, 0)
+    meshes.platonic.rotation = new Vector3(0, -.25, 0)
 }
 
 function toPlatonic() {
-    activeMesh = scene.getNodeByID(names.home.meshes.platonic)
+    activeMesh = meshes.platonic
     animations.platonic.play()
     platonicVisibility(true);
 }
@@ -171,15 +169,29 @@ function toPlatonic() {
 function leavePlatonic() {
     animations.platonic.start(false, 3, 290, 0)
 }
+function platonicHoverAnim() {
+
+    if (animations.platonic.isPlaying || mouseClicked) 
+        return
+    
+    animations.platonic.start(false, 3, 290, 220)
+
+    let platonicHoverAnimObservable = animations.platonic.onAnimationGroupEndObservable.add(() => {
+        // animations.platonic.stop();
+        animations.platonic.start(false, 1, 220, 290)
+        animations.platonic.onAnimationGroupEndObservable.remove(platonicHoverAnimObservable)
+    });
+}
+
 
 function resetPlanet() {
     planetVisibility(false);
     resetPlanetAnim();
-    scene.getNodeByID(names.home.meshes.planet).rotation = new Vector3(0, -.25, 0)
+    meshes.planet.rotation = new Vector3(0, -.25, 0)
 }
 
 function toPlanet() {
-    activeMesh = scene.getNodeByID(names.home.meshes.planet)
+    activeMesh = meshes.planet
     animations.planet.play()
     planetVisibility(true);
 }
@@ -188,6 +200,20 @@ function leavePlanet() {
     animations.planet.start(false, 3, 237, 0)
 }
 
+
+function planetHoverAnim() {
+
+    if (animations.planet.isPlaying || mouseClicked) 
+        return
+    
+    animations.planet.start(false, 3, 237, 150)
+
+    let planetHoverAnimObservable = animations.planet.onAnimationGroupEndObservable.add(() => {
+        // animations.planet.stop();
+        animations.planet.start(false, 3, 150, 237)
+        animations.planet.onAnimationGroupEndObservable.remove(planetHoverAnimObservable)
+    });
+}
 // function resetAnims() {
 //     console.log(animations)
 //     animations.logo.stop()
@@ -197,36 +223,38 @@ function leavePlanet() {
 //     animations.planet.stop()
 //     animations.planet.reset()
 // }
+
 function resetLogoAnim() {
     animations.logo.stop()
     animations.logo.reset()
 }
+
 function resetPlatonicAnim() {
     animations.platonic.stop()
     animations.platonic.reset()
 }
+
 function resetPlanetAnim() {
     animations.planet.stop()
     animations.planet.reset()
 }
 
-
 function logoVisibility(visible) {
-    scene.getNodeByID(names.home.meshes.logo).setEnabled(visible)
+    meshes.logo.setEnabled(visible)
 }
 
 function platonicVisibility(visible) {
-    scene.getNodeByID(names.home.meshes.platonic).setEnabled(visible)
+    meshes.platonic.setEnabled(visible)
 }
 
 function planetVisibility(visible) {
-    scene.getNodeByID(names.home.meshes.planet).setEnabled(visible)
+    meshes.planet.setEnabled(visible)
 }
 
 function addMouseListeners() {
     console.log("addMouseListeners")
     var currentPosition = { x: 0, y: 0 };
-    var clicked = false;
+    mouseClicked = false;
     canvas = scene.getEngine().getRenderingCanvas()
 
     activeMouseListeners.push(canvas.addEventListener("pointerdown", function (evt) {
@@ -234,12 +262,12 @@ function addMouseListeners() {
 
         currentPosition.x = evt.clientX;
         currentPosition.y = evt.clientY;
-        clicked = true;
+        mouseClicked = true;
     }));
 
     activeMouseListeners.push(canvas.addEventListener("pointermove", function (evt) {
         // console.log("pointermove")
-        if (!clicked) {
+        if (!mouseClicked) {
             return;
         }
 
@@ -271,7 +299,7 @@ function addMouseListeners() {
 
     activeMouseListeners.push(canvas.addEventListener("pointerup", function (evt) {
         console.log("pointerup")
-        clicked = false;
+        mouseClicked = false;
     }));
 
 }
@@ -284,6 +312,7 @@ function clearMouseListeners() {
 }
 
 function addSceneListeners() {
+    console.log('/ sceneListeners');
     document.addEventListener('/', (e) => {
         console.log('scene start : /');
         onSceneEnter()
@@ -297,10 +326,125 @@ function addSceneListeners() {
 }
 
 
-function onSceneEnter() {
+async function onSceneEnter() {
     addMouseListeners();
+
+    await Logo.addAllToScene();
+    await Platonic.addAllToScene();
+    await Planet.addAllToScene();
+
+    setMeshes();
+
+    // planetViewOptimization()
+
+    // fix emissiveColor for logo material
+    scene.materials[0].emissiveColor = new Color3(0.0983946249, 0.306292057, 0.6389262)
+
+
+    // fix scale for planet and platonic
+    meshes.planet.scaling = new Vector3(.7, .7, .7);
+    meshes.platonic.scaling = new Vector3(1.5, 1.5, 1.5);
+
+    animations = {
+        logo: scene.animationGroups[0],
+        platonic: scene.animationGroups[1],
+        planet: scene.animationGroups[2],
+    }
+
+
+    resetLogo()
+    resetPlatonic()
+    resetPlanet()
+
+    toLogo();
+
+
+    meshes.logo._parentNode.actionManager = new ActionManager(scene);
+    meshes.logo._parentNode.actionManager.isRecursive = true;
+    meshes.platonic._parentNode.actionManager = new ActionManager(scene);
+    meshes.platonic._parentNode.actionManager.isRecursive = true;
+    meshes.planet._parentNode.actionManager = new ActionManager(scene);
+    meshes.planet._parentNode.actionManager.isRecursive = true;
+
+    // addHoverEvents();
+
 }
 
 function onSceneLeave() {
     clearMouseListeners()
+    removeHoverEvents()
+    Logo.removeAllFromScene();
+    Platonic.removeAllFromScene();
+    Planet.removeAllFromScene();
+}
+
+
+
+// /// 16-19 max
+// function planetViewOptimization() {
+//     console.log(scene)
+//     console.log(scene.getNodeByID(names.home.meshes.planet))
+
+//     scene.getNodeByID(names.home.meshes.logo).freezeWorldMatrix();
+//     scene.getNodeByID(names.home.meshes.platonic).freezeWorldMatrix();
+
+//     scene.getAnimationRatio();
+//     scene.blockMaterialDirtyMechanism = true;
+//     scene.skipPointerMovePicking = true
+//     scene.getNodeByID(names.home.meshes.planet).freezeWorldMatrix();
+//     scene.getNodeByID(names.home.meshes.planet).doNotSyncBoundingInfo = true;
+//     // scene.getNodeByID(names.home.meshes.planet).convertToUnIndexedMesh();
+
+
+//     // scene.freezeActiveMeshes();
+//     scene.materials.forEach((material) => {
+//         material.freeze();
+//     })
+
+
+// }
+
+function setMeshes() {
+    meshes.logo = scene.getNodeByID(names.home.meshes.logo);
+    meshes.platonic = scene.getNodeByID(names.home.meshes.platonic);
+    meshes.planet = scene.getNodeByID(names.home.meshes.planet);
+
+    // meshes.planet._parentNode.setBoundingInfo(totalBoundingInfo( meshes.planet.getChildren()));
+    // meshes.planet._parentNode.showBoundingBox =true;  
+
+}
+var totalBoundingInfo = function(meshes){
+    var boundingInfo = meshes[0].getBoundingInfo();
+    var min = boundingInfo.minimum.add(meshes[0].position);
+    var max = boundingInfo.maximum.add(meshes[0].position);
+    for(var i=1; i<meshes.length; i++){
+        boundingInfo = meshes[i].getBoundingInfo();
+        min = Vector3.Minimize(min, boundingInfo.minimum.add(meshes[i].position));
+        max = Vector3.Maximize(max, boundingInfo.maximum.add(meshes[i].position));
+    }
+    return new BoundingInfo(min, max);
+}
+function addHoverEvents() {
+    console.log("added addHoverEvents")
+    hoverEvents.logo = meshes.logo._parentNode.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, function (ev) {
+        console.log("logo hover")
+        logoHoverAnim()
+    }));
+
+    hoverEvents.platonic = meshes.platonic._parentNode.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, function (ev) {
+        console.log("platonic hover")
+        platonicHoverAnim()
+    }));
+
+    hoverEvents.planet = meshes.planet._parentNode.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, function (ev) {
+        console.log("planet hover")
+        planetHoverAnim()
+    }));
+}
+
+function removeHoverEvents() {
+    console.log("remove removeHoverEvents")
+    meshes.logo._parentNode.actionManager.registerAction(hoverEvents.logo);
+    meshes.platonic._parentNode.actionManager.registerAction(hoverEvents.platonic);
+    meshes.planet._parentNode.actionManager.registerAction(hoverEvents.planet);
 }

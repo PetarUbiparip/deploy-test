@@ -5,9 +5,9 @@ export class Slider extends React.Component {
     render() {
         const { scene } = this.props;
         return (
-            <div class="scrollbar-wrapper">
-                <div class="scrollbar" id="scroll">
-                    <div class={`${scene}-force-overflow`}></div>
+            <div className="scrollbar-wrapper" id="scrollbar-wrapper">
+                <div className="scrollbar" id="scrollbar">
+                    <div className={`${scene}-force-overflow`}></div>
                 </div>
             </div>
         );

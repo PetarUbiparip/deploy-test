@@ -55,5 +55,13 @@ export const names = {
 
             },
         },
+    },
+    solutions: {
+        bulb: {
+            body: "Bulb_body",
+            dots: "Bulb_Dots_GRP",
+            particles: "BULB_particlesGrp",
+            triangles: "BULB_trianglesGRP"
+        }
     }
 }

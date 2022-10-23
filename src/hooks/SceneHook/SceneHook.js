@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
-import { Engine, WebGPUEngine } from "@babylonjs/core";
+import { Engine } from "@babylonjs/core";
 import { HomePage } from "../../pages/HomePage";
-// import { compassToArrow, startArrowAnimShort } from "../../scenes/WhoWeAreScene"
-// import { test } from "../../scenes/HomeScene"
 
 export let homePage;
 export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady, ...rest }) => {
@@ -11,37 +9,45 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
   let engine;
 
 
-  
+
   useEffect(() => {
     const { current: canvas } = reactCanvas;
-    
+
     if (!canvas) return;
-    
+
     engine = new Engine(canvas, antialias, engineOptions, adaptToDeviceRatio);
     engine.displayLoadingUI();
     homePage = new HomePage(engine, sceneOptions);
+    homePage.createScenes(engine)
 
     engine.runRenderLoop(() => {
       if (typeof onRender === "function") onRender(homePage.activeScene);
-      homePage.activeScene.render();
+
+
+      homePage?.activeScene?.render();
+      homePage?.transitionScene?.render();
+      // console.log(homePage?.transitionScene?.animationGroups[0]?.isPlaying)
+      // if (homePage?.transitionActive || true)
+
+
       let divFps = document.getElementById("fps");
       divFps.innerHTML = engine.getFps().toFixed() + " fps  <br>" + test()
     });
 
 
-    function test(){
+    function test() {
       let x = "-"
       let y = "-"
       let z = "-"
 
-      if (homePage.activeScene.activeCamera) {
+      if (homePage?.activeScene?.activeCamera) {
         x = homePage.activeScene.activeCamera.position.x;
         y = homePage.activeScene.activeCamera.position.y;
         z = homePage.activeScene.activeCamera.position.z;
       }
 
 
-      return "camera position <br>"+  x + " : " + y + " : " + z
+      return "camera position <br>" + x + " : " + y + " : " + z
     }
 
     const resize = () => {
@@ -68,8 +74,8 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
 
   return (
     <div>
-      {/* <div class='buttons'> */}
-        {/* <button onClick={() => switchScene('Working')}>
+      {/* <div className='buttons'> */}
+      {/* <button onClick={() => switchScene('Working')}>
           Working
         </button>
 
@@ -81,7 +87,7 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
           Platonic
         </button> */}
 
-{/* 
+      {/* 
         <button onClick={() => compassToArrow()}>
           Start anim
         </button>

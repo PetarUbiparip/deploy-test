@@ -1,8 +1,11 @@
 import '@babylonjs/loaders';
-import { Animation, Vector3, HemisphericLight, GlowLayer, Color3, AxesViewer, PointerEventTypes } from "@babylonjs/core"
+import { Animation, Vector3, HemisphericLight, Color3, PointerEventTypes } from "@babylonjs/core"
 import { Bulb } from "../util/Loading";
-import { uiVisibility } from "../util/UIHelper.js";
+import { uiVisibility, scrollTo } from "../util/UIHelper.js";
 import { setGlow } from "../util/ModelUtil";
+import { warpTransition } from "./TransitionScene";
+import { names } from "../util/Naming.js";
+import history from '../routes/history';
 
 let scene;
 let camera;
@@ -12,23 +15,15 @@ let activeTimeouts = [];
 
 export const createSolutionsScene = async (s, c) => {
     sceneListeners()
-
     scene = s;
     camera = c;
     scene.clearColor = Color3.Black();
-
-    cameraConfig()
-
-    await Bulb.addAllToScene();
-
-    setGlow(2, 1000, 50, scene)
-
-    onSceneEnter()
+    // let  background = new Layer("", "./textures/Home/png/tempBackground.png", scene);
+    setGlow(4, 1024, 1000, scene)
 };
 
-
 function cameraConfig() {
-    var light = new HemisphericLight('HemiLight', new Vector3(0, 0.1, 0.1), scene);
+    new HemisphericLight('HemiLight', new Vector3(0, 0.1, 0.1), scene);
     const canvas = scene.getEngine().getRenderingCanvas()
     // camera.attachControl(canvas, false)
     // camera.wheelPrecision = 100;
@@ -36,27 +31,29 @@ function cameraConfig() {
     camera.rotation = new Vector3(0, Math.PI, 0);
 }
 
-
-
-
-
 function toSolutions() {
 
-    cleanUI()
+    clearUI()
     clearAllTimeouts()
 
+
     setTimeout(() => {
+        moveCameraLeftRight(true)
         scrollTo(0)
         currentDisplaying = Scenes.Solutions;
-        moveCameraLeftRight(true)
-        activeTimeouts.push(setTimeout(() => uiVisibility(Scenes.Solutions, true), 1000))
+        activeTimeouts.push(setTimeout(() => {
+            bulbVisibility(true);
+            uiVisibility("solutions-wrap", true)
+            uiVisibility(Scenes.Solutions, true)
+        }, 1000))
+
     }, 1000)
 
 }
 
 function toCybersecurityServices() {
 
-    cleanUI()
+    clearUI()
     clearAllTimeouts()
 
     setTimeout(() => {
@@ -69,7 +66,7 @@ function toCybersecurityServices() {
 
 function toManagedServices() {
 
-    cleanUI()
+    clearUI()
     clearAllTimeouts()
 
     setTimeout(() => {
@@ -82,7 +79,7 @@ function toManagedServices() {
 
 function toProfessionalServices() {
 
-    cleanUI()
+    clearUI()
     clearAllTimeouts()
 
     setTimeout(() => {
@@ -105,7 +102,7 @@ function changeScene(direction) {
             direction ? toCybersecurityServices() : toProfessionalServices();
             break;
         case Scenes.ProfessionalServices:
-            if (direction) toManagedServices();
+            direction ? toManagedServices() : toOurOrganization();
             break;
         default:
             toCybersecurityServices();
@@ -167,15 +164,6 @@ function startSceneCameraAnim() {
     animation = scene.beginAnimation(camera, 74, 0)
 }
 
-function scrollTo(target) {
-    document.getElementById('scroll')
-        .scroll({
-            top: target,
-            left: 0,
-            behavior: 'smooth'
-        });
-}
-
 const Scenes = {
     Solutions: "solutions",
     CybersecurityServices: "cybersecurityServices",
@@ -197,32 +185,43 @@ function addPointerWhellObservable() {
 }
 
 function sceneListeners() {
+    console.log('/solutions sceneListeners');
     document.addEventListener('/solutions', (e) => {
+        console.log('/solutions');
         onSceneEnter()
     }, false);
 
     document.addEventListener('/solutions-stop', (e) => {
+        console.log('/solutions-stop');
         onSceneLeave()
     }, false);
 }
 
 function onSceneLeave() {
+    console.log("onSceneLeave")
     pointerWheelObserver = null;
     scene.onPointerObservable.remove(pointerWheelObserver);
+
+    Bulb.removeAllFromScene();
 }
 
-function onSceneEnter() {
+async function onSceneEnter() {
 
     console.log("onSceneEnter")
-    setTimeout(() => startSceneCameraAnim(), 1)
+    await Bulb.addAllToScene();
+    bulbVisibility(false);
 
     if (!pointerWheelObserver)
         addPointerWhellObservable()
 
+    // setTimeout(() => startSceneCameraAnim(), 1)
+    warpTransition()
+
+    cameraConfig()
     setTimeout(() => toSolutions(), 1000)
 }
 
-function cleanUI() {
+function clearUI() {
     uiVisibility(Scenes.Solutions, false)
     uiVisibility(Scenes.CybersecurityServices, false)
     uiVisibility(Scenes.ProfessionalServices, false)
@@ -236,4 +235,23 @@ function clearAllTimeouts() {
     )
     console.log("cleared")
     activeTimeouts = [];
+}
+
+function bulbVisibility(visible) {
+    scene.getNodeByID(names.solutions.bulb.dots).setEnabled(visible);
+    scene.getNodeByID(names.solutions.bulb.body).setEnabled(visible);
+    scene.getNodeByID(names.solutions.bulb.particles).setEnabled(visible);
+    scene.getNodeByID(names.solutions.bulb.triangles).setEnabled(visible);
+}
+
+
+function toOurOrganization() {
+    clearUI()
+    uiVisibility("solutions-wrap", false)
+
+    setTimeout(() => {
+        bulbVisibility(false);
+        history.push("/our-organization")
+    }, 1000)
+
 }

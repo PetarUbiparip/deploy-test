@@ -1,8 +1,10 @@
-import { HemisphericLight, Vector3, Color3, GlowLayer, AxesViewer, PointerEventTypes } from "@babylonjs/core"
-import { Warp, Arrow, Compass, Chess } from "../util/Loading.js";
-import { uiVisibility } from "../util/UIHelper.js";
-import { changeChildrenVisibility } from "../util/ModelUtil";
+import { HemisphericLight, Vector3, Color3, Layer, AxesViewer, PointerEventTypes } from "@babylonjs/core"
+import { Arrow, Compass, Chess } from "../util/Loading.js";
+import { uiVisibility, scrollTo } from "../util/UIHelper.js";
+import { changeChildrenVisibility, setGlow } from "../util/ModelUtil";
 import { names } from "../util/Naming.js";
+import { warpTransition } from "./TransitionScene";
+import history from '../routes/history';
 
 let scene;
 let camera;
@@ -11,6 +13,8 @@ let pointerWheelEventPaused = false;
 let currentDisplaying;
 let activeTimeouts = [];
 let pointerWheelObserver;
+let pointerCompassRotationObserver;
+let compass
 
 export const createWhoWeAreScene = async (s, c) => {
     sceneListeners()
@@ -19,47 +23,12 @@ export const createWhoWeAreScene = async (s, c) => {
     camera = c
     scene.clearColor = Color3.Black();
 
-    var light = new HemisphericLight('HemiLight', new Vector3(0, 0, 0), scene);
-    const canvas = scene.getEngine().getRenderingCanvas()
+    setGlow(2, 1024, 1000, scene)
 
-    await Warp.addAllToScene();
-    await Arrow.addAllToScene();
-    await Compass.addAllToScene();
-    await Chess.addAllToScene();
-
-    animations = {
-        warp: scene.animationGroups[0],
-        arrow: scene.animationGroups[1],
-        compass: scene.animationGroups[2],
-        chess: scene.animationGroups[3],
-    }
-
-    resetAnims();
-
-    scene.activeCamera = scene.cameras[2];
-
-    camera.attachControl(canvas, false)
-    camera.wheelPrecision = 100;
-    camera.minZ = 0.1;
-    camera.setTarget(Vector3.Zero())
-
-
-    // console.log(scene)
-    // console.log(scene.meshes)
-    // console.log(scene.animationGroups)
-
-    warpVisibility(false);
-    arrowVisibility(false);
-    compassVisibility(false);
-    chessVisibility(false);
-
-    // set glow
-    var glow = new GlowLayer("glow", scene);
-    glow.intensity = 2;
-
+    new HemisphericLight('HemiLight', new Vector3(0, 0, 0), scene);
 };
 
-export async function toCompass() {
+async function toCompass() {
     clearAllTimeouts()
 
     scrollTo(0)
@@ -71,27 +40,27 @@ export async function toCompass() {
     compassVisibility(false);
     warpTransition();
     resetAnims();
-    scene.activeCamera = scene.cameras[2];
+    scene.activeCamera = scene.cameras[1];
     animations.compass.play()
 
     activeTimeouts.push(setTimeout(() => {
         // const localAxes = new AxesViewer(scene, 1);
-        animations.warp.stop()
         scene.cameras[0].position = new Vector3(0.1, 0.2, 0.2);
         scene.cameras[0].target = new Vector3(0.1, 0, 0);
         scene.activeCamera = scene.cameras[0];
         compassVisibility(true);
-    }, 5000))
+    }, 3000))
 
     activeTimeouts.push(setTimeout(() => {
         uiVisibility(Scenes.Vision, true);
+        uiVisibility("who-we-are", true)
         pointerWheelEventPaused = false;
-    }, 6000))
+    }, 4000))
     // activeTimeouts.push(setTimeout(() => switchCompassPointer(),6000))
 }
 
 
-export async function toArrow() {
+async function toArrow() {
     scrollTo(document.documentElement.clientHeight * .6)
     pointerWheelEventPaused = true;
     console.log("toArrow")
@@ -102,23 +71,19 @@ export async function toArrow() {
     chessVisibility(false);
     resetAnims();
 
-    scene.activeCamera = scene.cameras[2];
+    scene.activeCamera = scene.cameras[1];
 
-    warpTransition();
-
-    activeTimeouts.push(setTimeout(() => {
-        animations.arrow.start()
-        arrowVisibility(true, 1500);
-    }, 2500));
+    animations.arrow.start()
+    arrowVisibility(true, 1000);
 
     activeTimeouts.push(setTimeout(() => {
         uiVisibility(Scenes.Mission, true);
         pointerWheelEventPaused = false;
-    }, 6000));
+    }, 4000));
 }
 
 
-export async function toChess() {
+async function toChess() {
     scrollTo(document.documentElement.clientHeight * 1.2)
     pointerWheelEventPaused = true;
     console.log("toChess")
@@ -126,14 +91,14 @@ export async function toChess() {
     uiVisibility(Scenes.Mission, false)
     arrowVisibility(false);
     resetAnims();
-    scene.activeCamera = scene.cameras[2];
+    scene.activeCamera = scene.cameras[1];
 
     warpTransition();
 
     activeTimeouts.push(setTimeout(() => {
         animations.chess.play()
         chessVisibility(true);
-    }, 4000));
+    }, 2000));
 
     activeTimeouts.push(setTimeout(() => {
         // const localAxes = new AxesViewer(scene, 1);
@@ -142,11 +107,26 @@ export async function toChess() {
         scene.cameras[0].minZ = 0.01;
         scene.activeCamera = scene.cameras[0];
 
-    }, 4500));
+    }, 2500));
     activeTimeouts.push(setTimeout(() => {
         uiVisibility(Scenes.Strategy, true);
         pointerWheelEventPaused = false;
-    }, 6500))
+
+    }, 4500))
+}
+
+function toHome() {
+    uiVisibility(Scenes.Strategy, false)
+    uiVisibility("who-we-are", false)
+
+    setTimeout(() => {
+
+        resetAnims();
+        scene.activeCamera = scene.cameras[1];
+        warpTransition();
+    }, 1000)
+    setTimeout(() => history.push("/"), 4000)
+
 }
 
 function resetAnims() {
@@ -156,25 +136,6 @@ function resetAnims() {
     animations.arrow.reset()
     animations.chess.stop()
     animations.chess.reset()
-}
-
-async function warpTransition() {
-    warpVisibility(true, 2000);
-    animations.warp.play(true);
-
-    setTimeout(() => {
-        warpVisibility(false, 2000);
-    }, 3000);
-
-    setTimeout(() => {
-        animations.warp.stop();
-    }, 5000);
-}
-
-export async function startArrowAnimShort() {
-
-    // animations.arrow.goToFrame(400);
-    // animations.arrow.start(true,  1, 400,  300 )
 }
 
 function arrowVisibility(visible, duration) {
@@ -188,10 +149,16 @@ function compassVisibility(visible) {
     scene.getNodeByID(names.whoWeAre.meshes.compass.star).setEnabled(visible);
     scene.getNodeByID(names.whoWeAre.meshes.compass.pointerStatic).setEnabled(visible);
     scene.getNodeByID(names.whoWeAre.meshes.compass.scala).setEnabled(visible);
-    
-    
+
     // always false
     scene.getNodeByID(names.whoWeAre.meshes.compass.pointerAnimated).setEnabled(false);
+
+    // add or remove compass rotation listeners
+    if (visible)
+        addCompassRotationListeners()
+    else
+        removeCompassRotationListeners()
+
 }
 
 function switchCompassPointer() {
@@ -232,11 +199,6 @@ function chessVisibility(visible) {
     scene.getNodeByID(names.whoWeAre.meshes.chess.table.particles).setEnabled(visible)
 }
 
-function warpVisibility(visible, duration) {
-    changeChildrenVisibility(scene.getNodeByID(names.whoWeAre.meshes.warpLoop)._children.entries(), visible, duration)
-}
-
-
 function clearAllTimeouts() {
     activeTimeouts.forEach((timeout) =>
         clearTimeout(timeout)
@@ -258,31 +220,17 @@ function changeScene(direction) {
             break;
         case Scenes.Strategy:
             console.log("Strategy")
-            if (direction) toArrow();
+            direction ? toArrow() : toHome();
             break;
         default:
             toCompass()
     }
 }
 
-// function uiVisibility(elementId, visible) {
-
-//     const uiElement = document.getElementById(elementId);
-//     if (visible) {
-//         uiElement.style.visibility = 'visible';
-//         uiElement.style.opacity = 1;
-//     } else {
-//         uiElement.style.visibility = 'hidden';
-//         uiElement.style.opacity = 0;
-//         uiElement.style.transition = "visibility 1s, opacity 1s linear";
-//     }
-// }
-
-
 function addPointerWhellObservable() {
     console.log("who we are observable added")
     pointerWheelObserver = scene.onPointerObservable.add((pointerInfo) => {
-        console.log("who we are observable")
+        // console.log("who we are observable")
 
         if (pointerWheelEventPaused) {
             return;
@@ -303,7 +251,7 @@ function addPointerWhellObservable() {
 }
 
 function sceneListeners() {
-
+    console.log('/who-we-are sceneListeners');
     document.addEventListener('/who-we-are', (e) => {
         // console.log(e);
         // console.log("/who-we-are");
@@ -325,30 +273,105 @@ function sceneListeners() {
 
 
 function onSceneEnter() {
-    setTimeout(() => toCompass(), 1)
     addPointerWhellObservable()
 
+    Arrow.addAllToScene();
+    Compass.addAllToScene();
+    Chess.addAllToScene();
+
+    animations = {
+        arrow: scene.animationGroups[0],
+        compass: scene.animationGroups[1],
+        chess: scene.animationGroups[2],
+    }
+
+    scene.activeCamera = scene.cameras[1];
+
+    // camera.attachControl(canvas, false)
+    // camera.wheelPrecision = 100;
+    camera.minZ = 0.1;
+    camera.setTarget(Vector3.Zero())
+
+    compass = {
+        frame: scene.getNodeByID(names.whoWeAre.meshes.compass.frame),
+        star: scene.getNodeByID(names.whoWeAre.meshes.compass.star),
+        scala: scene.getNodeByID(names.whoWeAre.meshes.compass.scala),
+    }
+
+    arrowVisibility(false);
+    compassVisibility(false);
+    chessVisibility(false);
+
+    // add emisive color to arrowScene
+    scene.getMaterialByName("aiStandardSurface1").emissiveColor = new Color3(0, 0.2307665, 1)
+    scene.getMaterialByName("aiStandardSurface3").emissiveColor = new Color3(0, 0.2307665, 1)
+
+    setTimeout(() => toCompass(), 1)
 }
 function onSceneLeave() {
-    // console.log(scene.onPointerObservable)
+
     scene.onPointerObservable.remove(pointerWheelObserver);
-    // console.log(scene.onPointerObservable)
-}
+    console.log("who we are removed")
 
+    Arrow.removeAllFromScene();
+    Compass.removeAllFromScene();
+    Chess.removeAllFromScene();
 
-
-
-function scrollTo(target) {
-    document.getElementById('scroll')
-        .scroll({
-            top: target,
-            left: 0,
-            behavior: 'smooth'
-        });
+    clearAllTimeouts();
 }
 
 const Scenes = {
     Vision: "vision",
     Mission: "mission",
     Strategy: "strategy",
+}
+
+
+
+
+function addCompassRotationListeners() {
+    console.log("addCompassRotationListeners")
+
+    let currentPosition = { x: 0, y: 0 };
+    let mouseClicked = false;
+
+    pointerCompassRotationObserver = scene.onPointerObservable.add((pointerInfo) => {
+
+        switch (pointerInfo.type) {
+            case PointerEventTypes.POINTERDOWN:
+                console.log("POINTERDOWN", pointerInfo.event)
+                currentPosition.x = pointerInfo.event.clientX;
+                mouseClicked = true;
+                break;
+            case PointerEventTypes.POINTERMOVE:
+
+                if (!mouseClicked) {
+                    return;
+                }
+
+                var dx = currentPosition.x - pointerInfo.event.clientX;
+                let rotateY = compass.star.rotation.y - dx / 200;
+
+                compass.frame.rotation = new Vector3(0, rotateY, 0)
+                compass.star.rotation = new Vector3(0, rotateY, 0)
+                compass.scala.rotation = new Vector3(0, rotateY, 0)
+
+                currentPosition.x = pointerInfo.event.clientX;
+
+                break;
+            case PointerEventTypes.POINTERUP:
+                console.log("POINTERUP")
+                mouseClicked = false;
+                break;
+        }
+    });
+}
+
+function removeCompassRotationListeners() {
+    console.log("removeCompassRotationListeners")
+    compass.frame.rotation = new Vector3(0, 0, 0);
+    compass.star.rotation = new Vector3(0, 0, 0);
+    compass.scala.rotation = new Vector3(0, 0, 0);
+
+    scene.onPointerObservable.remove(pointerCompassRotationObserver);
 }

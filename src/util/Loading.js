@@ -1,17 +1,18 @@
-import { SceneLoader } from "@babylonjs/core"
+import { SceneLoader, KeepAssets } from "@babylonjs/core"
 
 export let Logo;
 export let Platonic;
 export let Planet;
 export let Arrow;
 export let Warp;
+export let WarpNew;
 export let PlatonicShader;
 export let HomeSceneData;
 export let Compass;
 export let Chess;
 export let Bulb;
 
-export async function loadAllData(homeScene, whoWeAreScene, platonicScene, solutionsScene) {
+export async function loadAllData(homeScene, whoWeAreScene, platonicScene, solutionsScene, transitionScene) {
     console.log('Load start');
     let startTime = Date.now();
 
@@ -51,14 +52,14 @@ export async function loadAllData(homeScene, whoWeAreScene, platonicScene, solut
         }
     )
 
-    Warp = await SceneLoader.LoadAssetContainerAsync(
-        require('./../assets/scenes/whoWeAre/Warp.glb'),
-        '',
-        whoWeAreScene,
-        (container) => {
-            console.log("Warp loaded")
-        }
-    )
+    // Warp = await SceneLoader.LoadAssetContainerAsync(
+    //     require('./../assets/scenes/whoWeAre/Warp.glb'),
+    //     '',
+    //     whoWeAreScene,
+    //     (container) => {
+    //         console.log("Warp loaded")
+    //     }
+    // )
 
     Arrow = await SceneLoader.LoadAssetContainerAsync(
         require('./../assets/scenes/whoWeAre/Arrow.glb'),
@@ -95,10 +96,17 @@ export async function loadAllData(homeScene, whoWeAreScene, platonicScene, solut
             console.log('Bulb loaded');
         }
     )
-    
-    console.log(Logo)
+
+    WarpNew = await SceneLoader.LoadAssetContainerAsync(
+        require('./../assets/scenes/whoWeAre/Warp.glb'),
+        '',
+        transitionScene,
+        (container) => {
+            console.log("Warp loaded")
+        }
+    )
 
 
     console.log('Load end');
-    console.log('Load duration :' + ( Date.now() - startTime)/1000);
+    console.log('Load duration :' + (Date.now() - startTime) / 1000);
 }

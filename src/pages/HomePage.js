@@ -7,6 +7,7 @@ import { createOurOrganizationScene } from "../scenes/OurOrganizationScene"
 import { createContactScene } from "../scenes/ContactScene"
 import { createSolutionsScene } from "../scenes/SolutionsScene"
 import { createBusinessConsultingScene } from "../scenes/BusinessConsultingScene"
+import { createTransitionScene } from "../scenes/TransitionScene"
 import SceneHook from "../hooks/SceneHook/SceneHook"
 import { Routes, Route } from "react-router-dom";
 import { Home } from "../components/Home"
@@ -32,8 +33,9 @@ export class HomePage {
     contactScene;
     solutionsScene;
     businessConsultingScene;
+    transitionScene;
+    transitionActive;
     camera;
-
 
     constructor(engine, sceneOptions) {
 
@@ -46,10 +48,8 @@ export class HomePage {
         this.ourOrganizationScene = new Scene(engine, sceneOptions);
         this.contactScene = new Scene(engine, sceneOptions);
         this.solutionsScene = new Scene(engine, sceneOptions);
-        this.businessConsultingScene = new Scene(engine, sceneOptions);
+        this.transitionScene = new Scene(engine, sceneOptions);
         this.homeScene = new Scene(engine, sceneOptions);
-        this.createScenes(engine)
-        this.switchScene(history.location.pathname)
     }
 
     async createScenes(engine) {
@@ -57,28 +57,24 @@ export class HomePage {
         let whoWeAreCamera = new ArcRotateCamera('default_camera', 0, 0, 0, new Vector3(0, 0, 0), this.whoWeAreScene);
         let ourOrganizationCamera = new ArcRotateCamera('default_camera', 0, 0, 0, new Vector3(0, 0, 0), this.ourOrganizationScene);
         let contactCamera = new ArcRotateCamera('default_camera', 0, 0, 0, new Vector3(0, 0, 0), this.contactScene);
-        let platonicCamera = new ArcRotateCamera('default_camera', 1.5708, 1.5708, 0.2370, new Vector3(0, 0.12, 0), this.platonicScene);
         let solutionsCamera = new FreeCamera("default_camera", new Vector3(0, .1, .4), this.solutionsScene);
-        let businessConsultingCamera = new FreeCamera("default_camera", new Vector3(0, .1, .4), this.businessConsultingScene);
+        let transitionCamera = new ArcRotateCamera('default_camera', 0, 0, 0, new Vector3(0, 0, 0), this.transitionScene);
 
-        await loadAllData(this.homeScene, this.whoWeAreScene, this.platonicScene, this.solutionsScene, engine).then(() => {
-            this.createScene(this.homeScene, homeCamera, 'Home');
-            this.createScene(this.whoWeAreScene, whoWeAreCamera, 'WhoWeAre');
-            this.createScene(this.ourOrganizationScene, ourOrganizationCamera, 'OurOrganization');
-            this.createScene(this.contactScene, contactCamera, 'Contact');
-            this.createScene(this.platonicScene, platonicCamera, 'Platonic');
-            this.createScene(this.solutionsScene, solutionsCamera, 'Solutions');
-            this.createScene(this.businessConsultingScene, businessConsultingCamera, 'BusinessConsulting');
+        await loadAllData(this.homeScene, this.whoWeAreScene, this.platonicScene, this.solutionsScene, this.transitionScene).then(async () => {
+            await this.createScene(this.homeScene, homeCamera, 'Home');
+            await this.createScene(this.whoWeAreScene, whoWeAreCamera, 'WhoWeAre');
+            await this.createScene(this.ourOrganizationScene, ourOrganizationCamera, 'OurOrganization');
+            await this.createScene(this.contactScene, contactCamera, 'Contact');
+            await this.createScene(this.solutionsScene, solutionsCamera, 'Solutions');
+            await this.createScene(this.transitionScene, transitionCamera, 'Transition');
+            this.switchScene(history.location.pathname)
+            engine.hideLoadingUI();
         });
-        engine.hideLoadingUI();
     }
 
     createScene(scene, camera, sceneName) {
-        if (scene.isReady()) {
-            onSceneReady(scene, camera, sceneName);
-        } else {
-            scene.onReadyObservable.addOnce((scene) => onSceneReady(scene, camera, sceneName));
-        }
+        console.log("createScene : " + sceneName);
+        onSceneReady(scene, camera, sceneName);
     }
 
     switchScene(sceneName) {
@@ -115,7 +111,7 @@ export class HomePage {
                 this.activeSceneName = Scenes.Solutions
                 break;
             case '/business-consulting':
-                this.activeScene = this.businessConsultingScene;
+                this.activeScene = this.whoWeAreScene; //reusing 
                 this.activeSceneName = Scenes.BusinessConsulting
                 break;
 
@@ -142,6 +138,7 @@ const onSceneReady = async (s, c, selectedScene) => {
             break;
         case "WhoWeAre":
             await createWhoWeAreScene(s, c);
+            await createBusinessConsultingScene(s, c);
             break;
         case "Platonic":
             await createPlatonicScene(s, c);
@@ -157,6 +154,9 @@ const onSceneReady = async (s, c, selectedScene) => {
             break;
         case "BusinessConsulting":
             await createBusinessConsultingScene(s, c);
+            break;
+        case "Transition":
+            await createTransitionScene(s, c);
             break;
     }
 };

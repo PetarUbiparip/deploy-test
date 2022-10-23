@@ -5,21 +5,21 @@ import { PlatonicShader} from "../util/Loading";
 let scene;
 let camera;
 export const createPlatonicScene = async (s, c) => {
-    scene = s;
-    camera = c;
-    scene.clearColor = Color3.Black();
+    // scene = s;
+    // camera = c;
+    // scene.clearColor = Color3.Black();
 
-    scene.onPointerObservable.add((pointerInfo) => {
-        switch (pointerInfo.type) {
-            case PointerEventTypes.POINTERUP:
-                setCameraPositionToDefault()
-                break;
-        }
-    });
+    // scene.onPointerObservable.add((pointerInfo) => {
+    //     switch (pointerInfo.type) {
+    //         case PointerEventTypes.POINTERUP:
+    //             setCameraPositionToDefault()
+    //             break;
+    //     }
+    // });
 
-    cameraConfig()
+    // cameraConfig()
 
-    await PlatonicShader.instantiateModelsToScene();
+    // await PlatonicShader.instantiateModelsToScene();
 
 };
 

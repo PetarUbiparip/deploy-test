@@ -18,7 +18,6 @@ export class SequencePngUtil {
         this.plane.material = this.materialPlane;
     }
 
-
     loopFrames(fromIndex, toIndex) {
         this.hideLayers()
 

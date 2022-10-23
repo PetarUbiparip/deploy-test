@@ -1,0 +1,23 @@
+.contact {
+
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 1s linear;
+
+    
+    .logo {
+        position: fixed;
+        right: 20px;
+        top: calc(50% - 30vh - 80px);
+        color: white;
+        z-index: 10;
+
+
+
+        width: 75px;
+        height: 75px;
+        background-image:  url('http://localhost:3000/textures/Home/png/tempLogo.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+}

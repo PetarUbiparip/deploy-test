@@ -11,3 +11,16 @@ export function uiVisibility(elementId, visible) {
     }
 }
 
+export function hideElement(element) {
+    const uiElement = document.getElementById(element);
+    uiElement.style.visibility = 'hidden';
+}
+
+export function scrollTo(target) {
+    document.getElementById('scrollbar')
+        .scroll({
+            top: target,
+            left: 0,
+            behavior: 'smooth'
+        });
+}

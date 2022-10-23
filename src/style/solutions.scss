@@ -1,43 +1,56 @@
-.temp{
-    position: fixed;
-    top: 50px;   
-    left: 50px;   
-    color: white;
-}
+.solutions {
 
-
-.solutions-desc {
-    color: white;
-    position: fixed;
-    top: 50%;
-    transform: translate( 0, -50%);
-    width: 35vw;
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s, opacity 1s linear;
 
-    h1 {
-        text-transform: uppercase;
-        font-size: 50px;
+    .solutions-desc {
+        color: white;
+        position: fixed;
+        top: 50%;
+        transform: translate(0, -50%);
+        width: 35vw;
+
+        h1 {
+            text-transform: uppercase;
+            font-size: 50px;
+        }
+
+        p {
+            font-size: 30px;
+        }
+
     }
 
-    p {
-        font-size: 30px;
+    .right {
+        right: 70px;
     }
 
-}
+    .left {
+        left: 70px;
+    }
 
-.right {
-    right: 70px;
-}
+    .our-organization-back-button {
+        position: fixed;
+        bottom: 50px;
+        left: 50px;
+        color: white;
+    }
 
-.left {
-    left: 70px;
-}
+    .logo {
+        position: fixed;
+        right: 20px;
+        top: calc(50% - 30vh - 80px);
+        color: white;
+        z-index: 10;
 
-.our-organization-back-button{
-    position: fixed;
-    bottom: 50px;   
-    left: 50px;   
-    color: white;
+
+
+        width: 75px;
+        height: 75px;
+        background-image: url('http://localhost:3000/textures/Home/png/tempLogo.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
 }

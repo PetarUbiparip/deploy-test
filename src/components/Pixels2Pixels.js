@@ -7,7 +7,7 @@ export class Pixels2Pixels extends React.Component {
     render() {
         return (
             <div>
-                <h1 class="temp">Pixels2Pixels <Link to="/our-organization">back</Link></h1>
+                <h1 className="temp">Pixels2Pixels <Link to="/our-organization">back</Link></h1>
             </div>
 
 

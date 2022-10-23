@@ -72,11 +72,11 @@ export class Home extends React.Component {
 
         return (
             <div>
-                <div class='header'>
+                <div className='header'>
                     <h1>Harmonity-group</h1>
 
                 </div>
-                <div class='home-btns'>
+                <div className='home-btns'>
                     <HomeButton
                         title={"Who we are"}
                         onHover={this.onButtonHover}

@@ -1,6 +1,76 @@
-.temp{
+.temp {
     position: fixed;
-    top: 50px;   
-    left: 50px;   
+    top: 50px;
+    left: 50px;
     color: white;
+}
+
+.business-consulting {
+
+
+    .business-consulting-desc {
+        color: white;
+        position: fixed;
+        
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 1s linear;
+
+
+        h1 {
+            text-transform: uppercase;
+            font-size: 50px;
+        }
+
+        p {
+            font-size: 30px;
+        }
+    }
+
+    .top {
+        top: 5vh;
+        width: 80vw;
+        max-width: 1200px;
+        text-align: center;
+        margin: auto;
+        left: 50%;
+        transform: translate(-50%, 0);
+
+    }
+
+    .right {
+        top: 50%;
+        transform: translate(0, -50%);
+        width: 35vw;
+        right: 70px;
+    }
+
+    .left {
+        top: 50%;
+        transform: translate(0, -50%);
+        width: 35vw;
+        left: 70px;
+    }
+
+    .our-organization-back-button {
+        position: fixed;
+        bottom: 50px;
+        left: 50px;
+        color: white;
+    }
+
+    .logo {
+        position: fixed;
+        right: 20px;
+        top: calc(50% - 30vh - 80px);
+        color: white;
+        z-index: 10;
+
+        width: 75px;
+        height: 75px;
+        background-image: url('http://localhost:3000/textures/Home/png/tempLogo.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
 }
